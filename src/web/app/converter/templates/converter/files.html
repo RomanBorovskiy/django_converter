@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link type="text/css" href="{% static 'converter/css/files.css' %}" rel="stylesheet" />
+<head>
+    <meta charset="UTF-8">
+    <title>Конвертер</title>
+<script>
+    change_content = function(response){
+        const content = document.querySelector('#content');
+        var doc = new DOMParser().parseFromString(response, "text/html");
+        content.innerHTML = doc.querySelector('#content').innerHTML;
+        console.log('update files')
+    }
+    update = function(){
+        fetch('') .then(response => response.text()).then(html => { change_content(html); }) .catch(error => { console.log(error); });
+    }
+    setInterval(update, 5000);
+</script>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        Welcome Back, {{ user.username }}
+    {% else %}
+        Anon user
+    {% endif %}
+<div class="upload">
+<form action="" method="post" enctype="multipart/form-data">
+    <h3>Здесь можно загрузить файл</h3>
+    {% csrf_token %}
+    {% if form.non_field_errors or form.file.errors %}
+    <div class="form-error">
+    {{ form.non_field_errors }}
+    {{ form.file.errors }}
+    </div>
+    {% endif %}
+    {{ form.file }}
+    <button type="submit">Добавить</button>
+</form>
+</div>
+
+<hr>
+
+<div id="content">
+{% for file in files %}
+    <div class="file_content">
+        <div class="file_info">
+            <p><b>{{file.title}}</b></p>
+    <p><i>{{file.uploaded_at}}</i></p>
+    {% if file.status == 2 %}
+       <a href = "{{file.result_file.url}}"> Скачать </a>
+    {% elif file.status == 3 %}
+        <p>Ошибка: {{file.info}}</p>
+   {% endif %}
+    </div>
+    <div class="file_status">
+            {% if file.status == 0 %}
+                <img src="{% static 'converter/img/icon_load.png' %}" alt="Загрузка...">
+            {% elif file.status == 1 %}
+                <img src="{% static 'converter/img/progress.gif' %}" alt="Обработка...">
+            {% elif file.status == 2 %}
+                <form method="POST" action="{% url 'converter:delete' pk=file.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="from_page" value="{{page_obj.number}}">
+                    <input style=" width: 100px;height: 100px;" type="image" alt="Удалить"
+                           src="{% static 'converter/img/icon-deletelink.svg' %}"
+                    title="Удалить">
+                </form>
+
+                <!--<img  src="{% static 'converter/img/icon-ok.svg' %}" alt="Готово">-->
+            {% elif file.status == 3 %}
+                <form method="POST" action="{% url 'converter:delete' pk=file.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="from_page" value="{{page_obj.number}}">
+                    <input style=" width: 100px;height: 100px;" type="image" alt="Удалить"
+                           src="{% static 'converter/img/icon-deletelink.svg' %}"
+                    title="Удалить">
+                </form>
+                <img  src="{% static 'converter/img/icon-alert.svg' %}" alt="Ошибка">
+        {% endif %}
+    </div>
+    </div>
+{% endfor %}
+
+    <nav class="list-pages">
+    <ul>
+        {% for page_number in paginator.page_range %}
+        <li class="{% if page_number == page_obj.number %}page-num-selected{%else%} page-num {% endif %}">
+            <a href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+</div>
+
+
+</body>
+</html>

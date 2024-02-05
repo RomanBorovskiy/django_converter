@@ -1,0 +1,35 @@
+# pull official base image
+FROM python:3.11.1-alpine
+
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+#install libreoffice
+RUN apk add libreoffice
+
+# add jdk
+RUN apk add openjdk8-jre
+
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r requirements.txt
+
+
+#RUN add-apt-repository ppa:libreoffice
+#RUN apt update
+#RUN apt install libreoffice
+
+# copy entrypoint.sh
+COPY docker/entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# copy project
+COPY .. /usr/src/app/
+
+# run entrypoint.sh
+#ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
