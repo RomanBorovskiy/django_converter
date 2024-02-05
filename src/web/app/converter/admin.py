@@ -3,7 +3,14 @@ from django.db.utils import OperationalError, ProgrammingError
 
 from .models import Doc, Settings
 
-admin.site.register(Doc)
+
+class DocAdmin(admin.ModelAdmin):
+    list_display = ("id", "title", "uploaded_at", "status")
+    list_display_links = ("id", "title")
+    search_fields = ("title",)
+
+
+admin.site.register(Doc, DocAdmin)
 
 
 # Register your models here.

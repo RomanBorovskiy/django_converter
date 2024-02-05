@@ -11,6 +11,10 @@ logger = logging.getLogger(__file__)
 
 
 class Doc(models.Model):
+    class Meta:
+        verbose_name = "Файл"
+        verbose_name_plural = "Файлы"
+
     class DocState(models.IntegerChoices):
         LOADED = 0, "LOADED"
         IN_WORK = 1, "IN WORK"
@@ -55,8 +59,12 @@ class Doc(models.Model):
 
 
 class Settings(SingletonModel):
-    file_ttl = models.IntegerField(default=14 * 24 * 60, verbose_name="file live time (min)")
-    auto_remove = models.BooleanField(default=False, verbose_name="auto remove old files")
+    file_ttl = models.IntegerField(default=14 * 24 * 60, verbose_name="Время жизни файлов (мин)")
+    auto_remove = models.BooleanField(default=False, verbose_name="Включить автоудаление")
+
+    class Meta:
+        verbose_name = "Настройки"
+        verbose_name_plural = "Настройки"
 
     def __str__(self):
-        return "Configuration"
+        return "Установки автоудаления"

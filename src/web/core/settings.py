@@ -138,6 +138,6 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://localhost:6379/0")
 
 # CONVERTER
-TTL_DELETE_SCHEDULE_TIME = 30  # запуск задания на проверку для удаления файлов
+TTL_DELETE_SCHEDULE_TIME = 30  # период запуска задания на проверку для удаления файлов, в секундах
 PDF_FILE_FOLDER = "pdf_convert"
 FILES_LOADED_FOLDER = "files_loaded"
